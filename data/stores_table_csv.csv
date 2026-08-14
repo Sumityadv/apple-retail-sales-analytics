@@ -1,0 +1,101 @@
+﻿store_id,store_name,city,country
+ST001,Apple Fifth Avenue,New York,USA
+ST002,Apple SoHo,New York,USA
+ST003,Apple Upper West Side,New York,USA
+ST004,Apple World Trade Center,New York,USA
+ST005,Apple Williamsburg,Brooklyn,USA
+ST006,Apple Union Square,San Francisco,USA
+ST007,Apple Chestnut Street,San Francisco,USA
+ST008,Apple Palo Alto,Palo Alto,USA
+ST009,Apple Stanford,Palo Alto,USA
+ST010,Apple Valley Fair,San Jose,USA
+ST011,Apple The Grove,Los Angeles,USA
+ST012,Apple Century City,Los Angeles,USA
+ST013,Apple Santa Monica,Santa Monica,USA
+ST014,Apple Americana at Brand,Glendale,USA
+ST015,Apple Fashion Island,Newport Beach,USA
+ST016,Apple Lincoln Road,Miami,USA
+ST017,Apple Aventura,Miami,USA
+ST018,Apple Michigan Avenue,Chicago,USA
+ST019,Apple North Michigan Avenue,Chicago,USA
+ST020,Apple NorthPark,Dallas,USA
+ST021,Apple Houston Galleria,Houston,USA
+ST022,Apple Bellevue Square,Bellevue,USA
+ST023,Apple Scottsdale Fashion Square,Scottsdale,USA
+ST024,Apple Tysons Corner,McLean,USA
+ST025,Apple Washington Square,Portland,USA
+ST026,Apple Eaton Centre,Toronto,Canada
+ST027,Apple Yorkdale,Toronto,Canada
+ST028,Apple Square One,Mississauga,Canada
+ST029,Apple Pacific Centre,Vancouver,Canada
+ST030,Apple Rideau Centre,Ottawa,Canada
+ST031,Apple Regent Street,London,UK
+ST032,Apple Covent Garden,London,UK
+ST033,Apple Brompton Road,London,UK
+ST034,Apple Bluewater,Dartford,UK
+ST035,Apple Trafford Centre,Manchester,UK
+ST036,Apple Buchanan Street,Glasgow,UK
+ST037,Apple Kurfürstendamm,Berlin,Germany
+ST038,Apple Rosenthaler Straße,Berlin,Germany
+ST039,Apple Frankfurt,Frankfurt,Germany
+ST040,Apple München,Munich,Germany
+ST041,Apple Oberpollinger,Munich,Germany
+ST042,Apple Opéra,Paris,France
+ST043,Apple Champs-Élysées,Paris,France
+ST044,Apple Carré Sénart,Lieusaint,France
+ST045,Apple Part-Dieu,Lyon,France
+ST046,Apple Via del Corso,Rome,Italy
+ST047,Apple Oriocenter,Bergamo,Italy
+ST048,Apple Fiordaliso,Milan,Italy
+ST049,Apple Puerta del Sol,Madrid,Spain
+ST050,Apple La Maquinista,Barcelona,Spain
+ST051,Apple Xanadú,Madrid,Spain
+ST052,Apple Sydney,Sydney,Australia
+ST053,Apple Bondi,Sydney,Australia
+ST054,Apple Chadstone,Melbourne,Australia
+ST055,Apple Brisbane,Brisbane,Australia
+ST056,Apple BKC,Mumbai,India
+ST057,Apple Saket,New Delhi,India
+ST058,Apple Phoenix Palladium,Mumbai,India
+ST059,Apple Select Citywalk,New Delhi,India
+ST060,Apple VR Mall,Chennai,India
+ST061,Apple Forum Mall,Bengaluru,India
+ST062,Apple Phoenix Marketcity,Pune,India
+ST063,Apple AlphaOne,Ahmedabad,India
+ST064,Apple Shibuya,Tokyo,Japan
+ST065,Apple Ginza,Tokyo,Japan
+ST066,Apple Omotesando,Tokyo,Japan
+ST067,Apple Shinjuku,Tokyo,Japan
+ST068,Apple Kyoto,Kyoto,Japan
+ST069,Apple Fukuoka,Fukuoka,Japan
+ST070,Apple Sanlitun,Beijing,China
+ST071,Apple Wangfujing,Beijing,China
+ST072,Apple Xidan Joy City,Beijing,China
+ST073,Apple Pudong,Shanghai,China
+ST074,Apple Nanjing East,Shanghai,China
+ST075,Apple Hongqiao,Shanghai,China
+ST076,Apple MixC,Shenzhen,China
+ST077,Apple Vientiane City,Shenzhen,China
+ST078,Apple Tianhe,Guangzhou,China
+ST079,Apple Taikoo Hui,Guangzhou,China
+ST080,Apple Orchard Road,Singapore,Singapore
+ST081,Apple Marina Bay Sands,Singapore,Singapore
+ST082,Apple Dubai Mall,Dubai,UAE
+ST083,Apple Mall of the Emirates,Dubai,UAE
+ST084,Apple Yas Mall,Abu Dhabi,UAE
+ST085,Apple Garosu-gil,Seoul,South Korea
+ST086,Apple Myeongdong,Seoul,South Korea
+ST087,Apple Jamsil,Seoul,South Korea
+ST088,Apple IFC Mall,Hong Kong,Hong Kong
+ST089,Apple Causeway Bay,Hong Kong,Hong Kong
+ST090,Apple Amsterdam,Amsterdam,Netherlands
+ST091,Apple Haarlem,Haarlem,Netherlands
+ST092,Apple Bahnhofstrasse,Zurich,Switzerland
+ST093,Apple Genève,Geneva,Switzerland
+ST094,Apple Täby Centrum,Stockholm,Sweden
+ST095,Apple Emporia,Malmö,Sweden
+ST096,Apple CentralWorld,Bangkok,Thailand
+ST097,Apple ICONSIAM,Bangkok,Thailand
+ST098,Apple The Exchange TRX,Kuala Lumpur,Malaysia
+ST099,Apple Pavilion,Kuala Lumpur,Malaysia
+ST100,Apple Cork,Cork,Ireland
