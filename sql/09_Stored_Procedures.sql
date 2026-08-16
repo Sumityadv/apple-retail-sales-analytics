@@ -397,7 +397,326 @@ WHERE claim_id = 'CLM020281';
 COMMIT;
 
 
--- WORK IS IN PROGRESS EXPECTED COMPLETION 20 AUG 2026 --
+
+SELECT * FROM warranty;
+
+
+
+-- PROCEDURE 5 — PROCESS AN EXISTING WARRANTY CLAIM
+
+
+CREATE OR REPLACE PROCEDURE sp_update_warranty_claim(p_claim_id VARCHAR, p_repair_status VARCHAR)
+LANGUAGE plpgsql
+
+AS
+$$
+
+BEGIN
+
+	-- CLAIM EXISTS OR NOT
+	IF NOT EXISTS(
+		SELECT 1
+		FROM warranty
+		WHERE claim_id = p_claim_id
+	)THEN
+		RAISE EXCEPTION 'Claim ID % does not exist',p_claim_id;
+	END IF;
+
+	-- CHECK IS NEW WARRANTY STATUS ID VALID
+	IF p_repair_status NOT IN (
+		'Completed',
+        'Paid Repaired',
+        'Pending',
+        'Rejected',
+        'Replaced',
+        'Warranty Void'
+	)THEN
+		RAISE EXCEPTION 'Invalid repair status: %. Valid statuses are: Completed, Paid Repaired, Pending, Rejected, Replaced, Warranty Void.',
+            p_repair_status;
+    END IF;
+
+
+	-- UPDATE THE CLAIM
+
+	UPDATE warranty
+	SET repair_status = p_repair_status
+	WHERE claim_id = p_claim_id;
+
+END;
+$$;
+
+
+BEGIN;
+
+CALL sp_update_warranty_claim('CLM000047','Replaced');
+
+SELECT * FROM warranty WHERE claim_id = 'CLM000047';
+
+COMMIT;
+
+
+-- PROCEDURE 6 - ADD NEW PRODUCT
+
+SELECT * FROM products;
+
+CREATE OR REPLACE PROCEDURE sp_add_new_product(p_product_id VARCHAR, p_product_name VARCHAR, p_category_id VARCHAR, p_launch_date DATE, p_price NUMERIC(10,2))
+LANGUAGE plpgsql
+
+AS
+$$
+
+BEGIN
+
+	IF EXISTS (
+		SELECT 1
+		FROM products
+		WHERE product_id = p_product_id
+	)THEN 
+		RAISE EXCEPTION 'Product ID % already exist',p_product_id;
+	END IF;
+
+
+	-- CHECK PRODUCT NAME
+	IF EXISTS(
+		SELECT 1
+		FROM products
+		WHERE product_name = p_product_name
+	)THEN
+		RAISE EXCEPTION 'Product name % already exists',p_product_name;
+	END IF;
+
+
+
+	-- CHECK PRICE POSITIVE
+	IF p_price <= 0 THEN
+		RAISE EXCEPTION 'Price % should be in positive',p_price;
+	END IF;
+
+
+	-- INSERT NEW PRODUCT
+
+	INSERT INTO products (
+    product_id,
+    product_name,
+    category_id,
+    launch_date,
+    price
+	)
+	VALUES (
+    p_product_id,
+    p_product_name,
+    p_category_id,
+    p_launch_date,
+    p_price
+);
+
+END;
+$$;
+
+	
+BEGIN;
+
+CALL sp_add_new_product('IP000','iPhone 17','CAT01','2025-10-22',0.00);
+
+ROLLBACK;
+
+
+
+-- PROCEDURE 7 UPDATE PRODUCT PRICE
+
+
+CREATE OR REPLACE PROCEDURE sp_update_product_price(p_product_id VARCHAR, p_price NUMERIC(10,2))
+LANGUAGE plpgsql
+
+AS
+$$
+
+BEGIN
+
+	IF NOT EXISTS(
+		SELECT 1
+		FROM products
+		WHERE product_id = p_product_id
+	)THEN
+		RAISE EXCEPTION 'Product ID % does not exist',p_product_id;
+	END IF;
+
+
+
+	-- CHECK PRICE IS POSITIVE OR NOT
+	IF p_price <= 0 THEN
+		RAISE EXCEPTION 'Price % must be a positive value',p_price;
+	END IF;
+
+
+
+	-- UPDATE PRICE
+	UPDATE products
+	SET price = p_price
+	WHERE product_id = p_product_id;
+
+END;
+$$;
+
+SELECT * FROM products;
+
+	
+BEGIN;
+
+CALL sp_update_product_price('MAC002',1499);
+
+SELECT * FROM products WHERE product_id = 'MAC002';
+
+COMMIT;
+
+
+
+-- PROCEDURE 8 - ADD NEW STORE
+
+SELECT * FROM stores;
+
+
+CREATE OR REPLACE PROCEDURE sp_add_new_store(p_store_id VARCHAR, p_store_name VARCHAR, p_city VARCHAR, p_country VARCHAR)
+LANGUAGE plpgsql
+
+AS
+$$
+
+BEGIN
+
+	IF EXISTS (
+		SELECT 1
+		FROM stores
+		WHERE store_id = p_store_id
+	)THEN
+		RAISE EXCEPTION 'Store ID % already exist',p_store_id;
+	END IF;
+
+
+
+	-- CHECKI ONE STORE WITH SAME NAME IN A PARTICULAR CITY
+	IF EXISTS (
+		SELECT 1
+		FROM stores
+		WHERE store_name = p_store_name
+		AND city = p_city
+	)THEN 
+		RAISE EXCEPTION 'Only 1 Store % allowed in a particular city % with same name',p_store_name,p_city;
+	END IF;
+	
+
+	-- ADDING NEW ENTRIES
+	INSERT INTO stores(
+		store_id,
+		store_name,
+		city,
+		country
+	)
+	VALUES(
+		p_store_id, 
+		p_store_name,
+		p_city,
+		p_country
+	);
+
+END;
+$$;
+
+BEGIN;
+
+CALL sp_add_new_store('ST101','Apple Galaxy','Lucknow','India');
+
+SELECT * FROM stores WHERE store_id = 'ST101';
+
+ROLLBACK;
+
+SELECT * FROM stores ORDER BY store_id DESC LIMIT 10;
+
+
+
+-- PROCEDURE 9 - UPDATE STORE
+
+CREATE OR REPLACE PROCEDURE sp_update_store(p_store_id VARCHAR, p_store_name VARCHAR, p_city VARCHAR, p_country VARCHAR)
+LANGUAGE plpgsql
+
+AS
+$$
+
+BEGIN
+
+
+	-- CHECK STORE ID PRESENT OR NOT
+	IF NOT EXISTS (
+		SELECT 1
+		FROM stores
+		WHERE store_id = p_store_id
+	)THEN
+		RAISE EXCEPTION 'Store ID % does not exist',p_store_id;
+	END IF;
+	
+
+	-- UPDATE THE STORE NAME
+	
+	UPDATE stores
+	SET store_name = p_store_name,
+		city = p_city,
+		country = p_country
+	WHERE store_id = p_store_id;
+
+END;
+$$;
+
+BEGIN;
+
+CALL sp_update_store('ST100','Apple Gallary','Lucknow','India');
+
+ROLLBACK;
+
+SELECT * FROM stores ORDER BY store_id DESC LIMIT 10;
+
+
+
+
+-- STORED PROCEDURES HAS BEEN COMPLETED HERE --
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
 
 
 	
