@@ -36,6 +36,10 @@ SAFETY PROTOCOL
 
 SET search_path TO apple;
 
+
+-- PROCEDURE 1 - CHNAGE WARRANTY STATUS TO COMPLETE
+
+
 CREATE OR REPLACE PROCEDURE sp_complete_warranty_claim(p_claim_id VARCHAR)
 
 LANGUAGE plpgsql
@@ -100,5 +104,308 @@ SELECT * FROM warranty ORDER BY claim_id LIMIT 30;
 
 
 SELECT * FROM warranty;
+
+
+
+
+
+
+-- PROCEDURE 2- PROCEDURE WITH PARAMETER
+
+/*
+
+New sale details
+       ↓
+Is sale_id already present?
+       ↓
+Does store_id exist?
+       ↓
+Does product_id exist?
+       ↓
+Is quantity > 0?
+       ↓
+Does sale_date exist?
+       ↓
+Is sale_date >= product launch_date?
+       ↓
+INSERT sale
+
+
+
+*/
+
+
+CREATE OR REPLACE PROCEDURE sp_insert_sale(p_sale_id VARCHAR,
+		p_sale_date DATE, 
+		p_store_id VARCHAR, 
+		p_product_id VARCHAR, 
+		p_quantity INT
+)
+
+LANGUAGE plpgsql
+AS
+$$
+
+DECLARE v_launch_date DATE;
+
+BEGIN
+
+	-- 1 CHECK FOR DUPLICATE SALE ID
+	IF EXISTS ( 
+		SELECT 1
+		FROM sales
+		WHERE sale_id = p_sale_id
+	) THEN
+		RAISE EXCEPTION 'Sale ID % already exists',p_sale_id;
+	END IF;
+
+	-- 2 CHECK FOR STORE ID
+	IF NOT EXISTS(
+		SELECT 1
+		FROM stores
+		WHERE store_id = p_store_id
+	)THEN
+		RAISE EXCEPTION 'Store ID % does not exists',p_store_id;
+	END IF;
+
+
+	-- 3 CHECK PRODUCT ID & GET LAUNCH DATE
+	SELECT
+	launch_date
+	INTO v_launch_date
+	FROM products
+	WHERE product_id = p_product_id;
+
+	IF NOT FOUND THEN
+		RAISE EXCEPTION 'Peoduct ID % does not exist',p_product_id;
+	END IF;
+
+	-- 4 CHECK QUANTITY GREATER THAN 0
+
+	IF p_quantity <=0 THEN
+		RAISE EXCEPTION 'Quantity must be greater than 0.';
+	END IF;
+
+	-- 5 CHECK SALE DATE NULL
+
+	IF p_sale_date IS NULL THEN
+		RAISE EXCEPTION 'Sale Date cannot be NULL';
+	END IF;
+
+
+	-- 6 CHECK SALE DATE IS NOT PRIOR TO LAUNCH DATE
+
+	IF p_sale_date < v_launch_date THEN
+		RAISE EXCEPTION 'Sale Date % cannot be prior to launch date %',p_sale_date,v_launch_date;
+	END IF;
+
+
+	-- INSERT THE NEW SALE
+
+	INSERT INTO sales
+    (
+        sale_id,
+        sale_date,
+        store_id,
+        product_id,
+        quantity
+    )
+    VALUES
+    (
+        p_sale_id,
+        p_sale_date,
+        p_store_id,
+        p_product_id,
+        p_quantity
+    );
+
+END;
+$$;
+
+DROP PROCEDURE sp_insert_sale;
+	
+
+BEGIN;
+
+CALL sp_insert_sale(
+    'SALE130001',
+    '2024-10-11',
+    'ST002',
+    'IP027',
+    3
+);
+
+SELECT *
+FROM sales
+WHERE sale_id = 'SALE130001';
+
+COMMIT;
+
+
+
+SELECT * FROM sales;
+
+
+
+
+
+
+-- PROCEDURE 3 TO CHANGE THE QUANTITY
+
+CREATE OR REPLACE PROCEDURE sp_update_sales_quantity(p_sale_id VARCHAR, p_new_quantity INT)
+LANGUAGE plpgsql
+
+AS
+$$
+
+BEGIN
+	-- CHECK SALE EXISTS
+	IF NOT EXISTS(
+		SELECT 1
+		FROM sales
+		WHERE sale_id = p_sale_id
+	)THEN
+		RAISE EXCEPTION 'Sale ID % does not exists',p_sale_id;
+	END IF;
+
+	-- CEHCK NEW QUANTITY IS POSITIVE
+	IF p_new_quantity <= 0 THEN
+		RAISE EXCEPTION 'Quantity must be positive value';
+	END IF;
+
+
+	-- UPDATE THE QUANTITY
+
+	UPDATE sales
+	SET quantity = p_new_quantity
+	WHERE sale_id = p_sale_id;
+END;
+$$;	
+
+BEGIN;
+	CALL sp_update_sales_quantity('SALE130001',5);
+
+SELECT * FROM sales WHERE sale_id = 'SALE130001';
+
+COMMIT;
+
+
+
+
+-- PROCEDURE 4 TO INSERT WARRANTY CLAIM
+
+
+CREATE OR REPLACE PROCEDURE sp_insert_warranty_claim(p_claim_id VARCHAR, p_claim_date DATE, p_sale_id VARCHAR, p_repair_status VARCHAR)
+LANGUAGE plpgsql
+
+AS
+$$
+
+DECLARE v_sale_date DATE;
+
+BEGIN
+
+	-- CHECK CLAIM ID EXISTS
+
+	IF EXISTS(
+		SELECT 1
+		FROM warranty
+		WHERE claim_id = p_claim_id
+	)THEN
+		RAISE EXCEPTION 'Claim ID % already exists',p_claim_id;
+	END IF;
+
+	-- CHECK CLAIM DATE IS ADVANCE THAN SALE DATE
+
+	SELECT sale_date
+	INTO v_sale_date
+	FROM sales
+	WHERE sale_id = p_sale_id;
+	-- CHECK SALE ID IS EXISTS 
+	IF NOT FOUND THEN
+		RAISE EXCEPTION 'Sale ID % is not exists',p_sale_id;
+	END IF;
+
+	-- CLAIM DATE CANNOT BE BEFORE SALE DATE
+
+	IF p_claim_date < v_sale_date THEN
+		RAISE EXCEPTION 'Claim date % cannot be before sale date %.',
+            p_claim_date,
+            v_sale_date;
+    END IF;
+	
+
+	-- CLAIM DATE SHOULD BE IN 540 WARRANTY DAYS
+
+	IF (p_claim_date - v_sale_date) > 540 THEN
+		RAISE EXCEPTION 'Claim date % is beyond the 540-day warranty period.',
+            p_claim_date;
+    END IF;
+
+
+	-- 5. Validate repair status
+    IF p_repair_status NOT IN (
+        'Completed',
+        'Paid Repaired',
+        'Pending',
+        'Rejected',
+        'Replaced',
+        'Warranty Void'
+    ) THEN
+        RAISE EXCEPTION
+            'Invalid repair status: %. Valid statuses are: Completed, Paid Repaired, Pending, Rejected, Replaced, Warranty Void.',
+            p_repair_status;
+    END IF;
+
+
+	-- INSERT WARRANTY CLAIM
+
+	INSERT INTO warranty
+    (
+        claim_id,
+        claim_date,
+        sale_id,
+        repair_status
+    )
+    VALUES
+    (
+        p_claim_id,
+        p_claim_date,
+        p_sale_id,
+        p_repair_status
+    );
+
+END;
+$$;
+
+SELECT * FROM warranty ORDER BY claim_id DESC LIMIT 10;
+
+
+BEGIN;
+
+CALL sp_insert_warranty_claim(
+    'CLM020281',
+    '2025-02-12',
+    'SALE130001',
+    'Completed'
+);
+
+SELECT *
+FROM warranty
+WHERE claim_id = 'CLM020281';
+
+COMMIT;
+
+
+-- WORK IS IN PROGRESS EXPECTED COMPLETION 20 AUG 2026 --
+
+
+	
+
+
+
+
+
+
 
 
