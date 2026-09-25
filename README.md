@@ -1,6 +1,6 @@
 # Apple Retail Sales Analytics
 
-**Status:**  Under Development — Expected completion: Tuesday, 25 August 2026
+**Status:**  Under Development — Expected completion: Sunday, 11 October 2026
 
 An end-to-end retail sales analytics project built using **PostgreSQL, SQL, and Power BI**.
 
